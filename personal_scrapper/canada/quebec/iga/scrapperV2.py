@@ -10,23 +10,23 @@ def get_main_categories(page):
     category_elements = page.query_selector_all('ul li a[data-test="root-category-link"]')
 
     allowed_categories = [
-        "Fresh Fruits & Vegetables",
-        "Meat & Seafood",
-        "Dairy & Eggs",
-        "Cheese",
-        "Bread & Bakery",
-        "Deli",
-        "Prepared Meals & Sides",
-        "Frozen Foods",
-        "Pantry",
-        "Snacks & Candy",
-        "Beverages",
-        "Plant Based",
-        "Baby",
-        "Health & Beauty",
-        "Household Products",
-        "Pets",
-        "Floral & Garden"
+    #    "Fresh Fruits & Vegetables",
+    #    "Meat & Seafood",
+    #    "Dairy & Eggs",
+    #    "Cheese",
+    #    "Bread & Bakery",
+    #    "Deli",
+    #    "Prepared Meals & Sides",
+    #    "Frozen Foods",
+    #    "Pantry",
+    #    "Snacks & Candy",
+    #    "Beverages",
+    #    "Plant Based",
+    #    "Baby",
+    #    "Health & Beauty",
+    #    "Household Products",
+        "Pets"
+    #    "Floral & Garden"
     ]
 
     categories = []
