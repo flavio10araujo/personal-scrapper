@@ -1,6 +1,5 @@
-from personal_scrapper.canada.quebec.iga.scrapper import get_main_categories
+from personal_scrapper.canada.quebec.iga.scrapper import scrape_categories_and_subcategories
 
 if __name__ == "__main__":
-    categories = get_main_categories()
-    for cat in categories:
-        print(f"{cat['name']} -> {cat['url']}")
+    data = scrape_categories_and_subcategories()
+
