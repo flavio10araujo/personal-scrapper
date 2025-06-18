@@ -1,5 +1,5 @@
-from personal_scrapper.canada.quebec.iga.scrapper import scrape_categories_and_subcategories
+from personal_scrapper.canada.quebec.iga.scrapper import scrape_all_categories
 
 if __name__ == "__main__":
-    data = scrape_categories_and_subcategories()
+    data = scrape_all_categories()
 
