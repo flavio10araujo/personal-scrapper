@@ -115,17 +115,14 @@ def extract_products_from_category(page, category_url: str, max_scrolls: int = 1
 
             brand_label = page.query_selector('h2:text("Brand")')
             brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
-
-            if not name_el or not quantity_el or not price_el:
-                print(f"⚠️ Dados incompletos: {url}")
-                continue
-
             name = name_el.inner_text().strip()
             quantity = quantity_el.inner_text().strip()
             price = price_el.inner_text().strip()
             brand = brand_el.inner_text().strip() if brand_el else ""
 
             sku = url.strip("/").split("/")[-1]
+
+            print(f"{name} | {quantity} | {price} | {brand} | {sku} | {url}")
 
             product_data.append({
                 "url": url,
@@ -143,7 +140,8 @@ def extract_products_from_category(page, category_url: str, max_scrolls: int = 1
 def scrape_all_categories():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+        page = context.new_page()
 
         all_data = []
         main_categories = get_main_categories(page)
@@ -163,3 +161,25 @@ def scrape_all_categories():
 
         browser.close()
         return { "categories": all_data }
+
+def scrape_all_categories_new():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+        page = context.new_page()
+        page.goto("https://voila.ca/products/purina-one-plus-dry-cat-food-hairball-formula-chicken-1-8-kg/198145EA")
+        page.wait_for_selector("h1", timeout=5000)
+
+        name_el = page.query_selector("h1")
+        quantity_el = page.query_selector('div[data-test="size-container"] span[aria-hidden="true"]')
+        price_el = page.query_selector('div[data-test="price-container"] span')
+
+        brand_label = page.query_selector('h2:text("Brand")')
+        brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
+
+        name = name_el.inner_text().strip()
+        quantity = quantity_el.inner_text().strip()
+        price = price_el.inner_text().strip()
+        brand = brand_el.inner_text().strip() if brand_el else ""
+
+        print(f"{name} | {quantity} | {price} | {brand}")
