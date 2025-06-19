@@ -82,7 +82,7 @@ def extract_category_id(url: str) -> str:
     match = re.search(r'/WEB(\d+)', url)
     return f"WEB{match.group(1)}" if match else ""
 
-def extract_products_from_category(page, category_url: str, max_scrolls: int = 10) -> List[Dict]:
+def extract_products_from_category(page, category_url: str, max_scrolls: int = 100) -> List[Dict]:
     page.goto(category_url)
     page.wait_for_selector('.product-card-container', timeout=5000)
 
@@ -123,7 +123,7 @@ def extract_products_from_category(page, category_url: str, max_scrolls: int = 1
             except Exception as e:
                 print(f"⚠️ Erro na extração: {e}")
 
-        page.mouse.wheel(0, 3000)
+        page.mouse.wheel(0, 1000)
         page.wait_for_timeout(1500)
 
         height = page.evaluate("document.body.scrollHeight")
