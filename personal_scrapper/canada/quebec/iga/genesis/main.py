@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from personal_scrapper.canada.quebec.iga.genesis.scrapperV3 import scrape_all_categories
+from personal_scrapper.canada.quebec.iga.genesis.scrapper import scrape_all_categories
 
 if __name__ == "__main__":
     data = scrape_all_categories()
