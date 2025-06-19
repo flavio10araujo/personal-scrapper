@@ -1,4 +1,4 @@
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, ViewportSize
 from typing import List, Dict
 import re
 
@@ -155,7 +155,11 @@ def extract_products_from_category(page, category_url: str, max_scrolls: int = 1
 def scrape_all_categories():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+        viewport: ViewportSize = {"width": 32767, "height": 32767}
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+            viewport=viewport
+        )
         page = context.new_page()
 
         all_data = []
