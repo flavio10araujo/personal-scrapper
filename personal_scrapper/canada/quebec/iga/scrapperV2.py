@@ -84,56 +84,71 @@ def extract_category_id(url: str) -> str:
 
 def extract_products_from_category(page, category_url: str, max_scrolls: int = 10) -> List[Dict]:
     page.goto(category_url)
-    products = set()
-    last_height = 0
+    page.wait_for_selector('.product-card-container', timeout=5000)
+
+    seen_skus = set()
+    product_data = []
+    products_temp = []
 
     for _ in range(max_scrolls):
+        wrappers = page.query_selector_all('.product-card-container')
+        for wrapper in wrappers:
+            try:
+                link_el = wrapper.query_selector('a[data-test="fop-product-link"]')
+                href = link_el.get_attribute("href") if link_el else ""
+                if not href:
+                    continue
+                sku = href.strip("/").split("/")[-1]
+                if sku in seen_skus:
+                    continue
+                seen_skus.add(sku)
+
+                name_el = wrapper.query_selector('h3[data-test="fop-title"]')
+                name = name_el.inner_text().strip() if name_el else ""
+
+                url = "https://voila.ca" + href
+                size_el = wrapper.query_selector('div[data-test="fop-size"] span')
+                quantity = size_el.inner_text().strip() if size_el else ""
+
+                price_el = wrapper.query_selector('span[data-test="fop-price"]')
+                price = price_el.inner_text().strip() if price_el else ""
+
+                products_temp.append({
+                    "name": name,
+                    "url": url,
+                    "sku": sku,
+                    "quantity": quantity,
+                    "price": price
+                })
+            except Exception as e:
+                print(f"⚠️ Erro na extração: {e}")
+
         page.mouse.wheel(0, 3000)
-        page.wait_for_timeout(1000)
+        page.wait_for_timeout(1500)
 
-        product_elements = page.query_selector_all('a[href^="/products/"]')
-        for el in product_elements:
-            href = el.get_attribute("href")
-            if href and href.startswith("/products/"):
-                products.add("https://voila.ca" + href)
-
-        # Verifica se chegou ao fim (não carrega mais)
         height = page.evaluate("document.body.scrollHeight")
-        if height == last_height:
+        if hasattr(extract_products_from_category, "_last_height") and extract_products_from_category._last_height == height:
             break
-        last_height = height
+        extract_products_from_category._last_height = height
 
-    product_data = []
-    for url in sorted(products):
+    for prod in products_temp:
         try:
-            page.goto(url)
-            page.wait_for_selector("h1", timeout=5000)
+            brand = ""
+            if prod["url"]:
+                page.goto(prod["url"])
+                page.wait_for_selector("h1", timeout=5000)
 
-            name_el = page.query_selector("h1")
-            quantity_el = page.query_selector('div[data-test="size-container"] span[aria-hidden="true"]')
-            price_el = page.query_selector('div[data-test="price-container"] span')
+                brand_label = page.query_selector('h2:text("Brand")')
+                brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
+                brand = brand_el.inner_text().strip() if brand_el else ""
 
-            brand_label = page.query_selector('h2:text("Brand")')
-            brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
-            name = name_el.inner_text().strip()
-            quantity = quantity_el.inner_text().strip()
-            price = price_el.inner_text().strip()
-            brand = brand_el.inner_text().strip() if brand_el else ""
+            prod["brand"] = brand
+            product_data.append(prod)
 
-            sku = url.strip("/").split("/")[-1]
+            print(f"✔️ {prod['name']} | {prod['quantity']} | {prod['price']} | {brand} | {prod['sku']}")
 
-            print(f"{name} | {quantity} | {price} | {brand} | {sku} | {url}")
-
-            product_data.append({
-                "url": url,
-                "sku": sku,
-                "name": name,
-                "quantity": quantity,
-                "price": price,
-                "brand": brand
-            })
         except Exception as e:
-            print(f"Erro ao extrair produto: {url} -> {e}")
+            print(f"⚠️ Erro no produto {prod['url']}: {e}")
 
     return product_data
 
@@ -147,7 +162,7 @@ def scrape_all_categories():
         main_categories = get_main_categories(page)
 
         for category in main_categories:
-            print(f"\n📦 Categoria: {category['name']}")
+            print(f"\n📦 Category: {category['name']}")
             subcategories = get_all_subcategories(page, category["url"])
             products = extract_products_from_category(page, category["url"])
 
