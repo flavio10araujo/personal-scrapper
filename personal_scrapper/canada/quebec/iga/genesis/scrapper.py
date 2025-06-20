@@ -67,7 +67,7 @@ def get_all_subcategories(page, category_url: str, depth: int = 0) -> List[Dict]
     for name, full_url in sub_data:
         print(f"{indent}↳ {name}")
         nested = get_all_subcategories(page, full_url, depth + 1)
-        products = extract_products_from_category(page, full_url)
+        products = extract_products_from_category(page, full_url, name)
         subcategories.append({
             "id": extract_category_id(full_url),
             "name": name,
@@ -82,7 +82,7 @@ def extract_category_id(url: str) -> str:
     match = re.search(r'/WEB(\d+)', url)
     return f"WEB{match.group(1)}" if match else ""
 
-def extract_products_from_category(page, category_url: str, max_scrolls: int = 100) -> List[Dict]:
+def extract_products_from_category(page, category_url: str, category_name: str, max_scrolls: int = 100) -> List[Dict]:
     page.goto(category_url)
     page.wait_for_selector('.product-card-container', timeout=5000)
 
@@ -142,9 +142,8 @@ def extract_products_from_category(page, category_url: str, max_scrolls: int = 1
                 brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
                 brand = brand_el.inner_text().strip() if brand_el else ""
 
-            # Build the new product structure
             product_data.append({
-                "name": prod["name"],
+                "name":  brand + " " + category_name,
                 "language": "en",
                 "brand": brand,
                 "gpc_code": "",
@@ -182,7 +181,7 @@ def scrape_all_categories():
         for category in main_categories:
             print(f"\n📦 Category: {category['name']}")
             subcategories = get_all_subcategories(page, category["url"])
-            products = extract_products_from_category(page, category["url"])
+            products = extract_products_from_category(page, category["url"], category["name"])
 
             all_data.append({
                 "id": extract_category_id(category["url"]),
