@@ -87,8 +87,8 @@ def extract_products_from_category(page, category_url: str, max_scrolls: int = 1
     page.wait_for_selector('.product-card-container', timeout=5000)
 
     seen_skus = set()
-    product_data = []
     products_temp = []
+    product_data = []
 
     for _ in range(max_scrolls):
         wrappers = page.query_selector_all('.product-card-container')
@@ -136,14 +136,28 @@ def extract_products_from_category(page, category_url: str, max_scrolls: int = 1
             brand = ""
             if prod["url"]:
                 page.goto(prod["url"])
-                page.wait_for_selector("h1", timeout=5000)
+                page.wait_for_selector("h1", timeout=8000)
 
                 brand_label = page.query_selector('h2:text("Brand")')
                 brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
                 brand = brand_el.inner_text().strip() if brand_el else ""
 
-            prod["brand"] = brand
-            product_data.append(prod)
+            # Build the new product structure
+            product_data.append({
+                "name": prod["name"],
+                "language": "en",
+                "brand": brand,
+                "gpc_code": "",
+                "variations": [
+                    {
+                        "name": prod["name"],
+                        "url": prod["url"],
+                        "sku": prod["sku"],
+                        "quantity": prod["quantity"],
+                        "price": prod["price"]
+                    }
+                ]
+            })
 
             print(f"✔️ {prod['name']} | {prod['quantity']} | {prod['price']} | {brand} | {prod['sku']}")
 
