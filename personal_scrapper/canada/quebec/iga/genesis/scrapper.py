@@ -4,6 +4,9 @@ import re
 
 BASE_URL = "https://voila.ca/categories"
 
+# Global set to track seen SKUs
+seen_skus = set()
+
 def get_main_categories(page):
     page.goto(BASE_URL)
     page.wait_for_selector('ul li a[data-test="root-category-link"]')
@@ -83,10 +86,10 @@ def extract_category_id(url: str) -> str:
     return f"WEB{match.group(1)}" if match else ""
 
 def extract_products_from_category(page, category_url: str, category_name: str, max_scrolls: int = 100) -> List[Dict]:
+    global seen_skus
     page.goto(category_url)
     page.wait_for_selector('.product-card-container', timeout=5000)
 
-    seen_skus = set()
     products_temp = []
     product_data = []
 
@@ -166,6 +169,9 @@ def extract_products_from_category(page, category_url: str, category_name: str, 
     return product_data
 
 def scrape_all_categories():
+    global seen_skus
+    seen_skus = set()
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         viewport: ViewportSize = {"width": 32767, "height": 32767}
