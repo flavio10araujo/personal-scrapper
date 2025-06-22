@@ -74,6 +74,7 @@ def get_all_subcategories(page, category_url: str, depth: int = 0) -> List[Dict]
         subcategories.append({
             "id": extract_category_id(full_url),
             "name": name,
+            "gpc_code": "",
             "url": full_url,
             "subcategories": nested,
             "products": products
@@ -149,7 +150,6 @@ def extract_products_from_category(page, category_url: str, category_name: str, 
                 "name":  brand + " " + category_name,
                 "language": "en",
                 "brand": brand,
-                "gpc_code": "",
                 "variations": [
                     {
                         "name": prod["name"],
