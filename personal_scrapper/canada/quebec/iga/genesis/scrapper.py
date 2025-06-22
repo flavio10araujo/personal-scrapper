@@ -150,6 +150,7 @@ def extract_products_from_category(page, category_url: str, category_name: str, 
                 "name":  brand + " " + category_name,
                 "language": "en",
                 "brand": brand,
+                "gpc_code": "",
                 "variations": [
                     {
                         "name": prod["name"],
