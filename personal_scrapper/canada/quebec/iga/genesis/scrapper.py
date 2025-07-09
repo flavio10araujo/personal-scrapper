@@ -14,23 +14,23 @@ def get_main_categories(page):
     category_elements = page.query_selector_all('ul li a[data-test="root-category-link"]')
 
     allowed_categories = [
-    #    "Fresh Fruits & Vegetables",
-    #    "Meat & Seafood",
-    #    "Dairy & Eggs",
-    #    "Cheese",
-    #    "Bread & Bakery",
-    #    "Deli",
-    #    "Prepared Meals & Sides",
-    #    "Frozen Foods",
-    #    "Pantry",
-    #    "Snacks & Candy",
-    #    "Beverages",
-    #    "Plant Based",
-    #    "Baby",
-    #    "Health & Beauty",
-    #    "Household Products",
-        "Pets"
-    #    "Floral & Garden"
+    #    "Fresh Fruits & Vegetables", #DONE
+    #    "Meat & Seafood", #DONE
+    #    "Dairy & Eggs", #DONE
+    #    "Cheese", #DONE
+    #    "Bread & Bakery", #DONE
+    #    "Deli", #DONE
+    #    "Prepared Meals & Sides", #DONE
+    #    "Frozen Foods", #DONE
+    #    "Pantry", #DONE
+    #    "Snacks & Candy", #DONE
+    #    "Beverages", #DONE
+    #    "Plant Based", #DONE
+    #    "Baby", #DONE
+    #    "Health & Beauty", #DONE
+    #    "Household Products", #DONE
+    #    "Pets", #DONE
+    #    "Floral & Garden" #DONE
     ]
 
     categories = []
@@ -136,36 +136,47 @@ def extract_products_from_category(page, category_url: str, category_name: str, 
         extract_products_from_category._last_height = height
 
     for prod in products_temp:
-        try:
-            brand = ""
-            if prod["url"]:
-                page.goto(prod["url"])
-                page.wait_for_selector("h1", timeout=8000)
+        retries = 3
+        while retries > 0:
+            try:
+                brand = ""
+                if prod["url"]:
+                    page.goto(prod["url"])
+                    page.wait_for_selector("h1", timeout=8000)
 
-                brand_label = page.query_selector('h2:text("Brand")')
-                brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
-                brand = brand_el.inner_text().strip() if brand_el else ""
+                    brand_label = page.query_selector('h2:text("Brand")')
+                    brand_el = brand_label.evaluate_handle("el => el.nextElementSibling") if brand_label else None
+                    brand = brand_el.inner_text().strip() if brand_el else ""
 
-            product_data.append({
-                "name":  brand + " " + category_name,
-                "language": "en",
-                "brand": brand,
-                "gpc_code": "",
-                "variations": [
-                    {
-                        "name": prod["name"],
-                        "url": prod["url"],
-                        "sku": prod["sku"],
-                        "quantity": prod["quantity"],
-                        "price": prod["price"]
-                    }
-                ]
-            })
+                product_data.append({
+                    "name":  brand + " " + category_name,
+                    "language": "en",
+                    "company": "",
+                    "brand": brand,
+                    "gpc_code": "",
+                    "variations": [
+                        {
+                            "name": prod["name"],
+                            "url": prod["url"],
+                            "sku": prod["sku"],
+                            "quantity": prod["quantity"],
+                            "price": prod["price"]
+                        }
+                    ]
+                })
 
-            print(f"✔️ {prod['name']} | {prod['quantity']} | {prod['price']} | {brand} | {prod['sku']}")
+                print(f"✔️ {prod['name']} | {prod['quantity']} | {prod['price']} | {brand} | {prod['sku']}")
+                break
 
-        except Exception as e:
-            print(f"⚠️ Erro no produto {prod['url']}: {e}")
+            except Exception as e:
+                if "Timeout" in str(e) or "timeout" in str(e):
+                    retries -= 1
+                    print(f"⏳ Timeout for {prod['url']}, retries left: {retries}")
+                    if retries == 0:
+                        print(f"⚠️ Failed after retries: {prod['url']}")
+                else:
+                    print(f"⚠️ Erro no produto {prod['url']}: {e}")
+                    break
 
     return product_data
 
