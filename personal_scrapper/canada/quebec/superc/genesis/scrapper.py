@@ -37,7 +37,7 @@ def get_main_categories(page):
     return categories
 
 def get_categories_structure():
-    # Structure for Fruits & Vegetables and Dairy & Eggs with their subcategories
+    # Structure for Fruits & Vegetables, Dairy & Eggs, and Pantry with their subcategories
     return [
         [
             # Fruits & Vegetables
@@ -149,9 +149,109 @@ def get_categories_structure():
                 ],
             ]
         ],
-        # Other main categories as leaf URLs
-        f"{BASE_URL}/en/aisle/000010",  # Pantry
-        # ... add more as needed ...
+        [
+            # Pantry
+            [
+                # Baking Ingredients
+                [
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/flour-baking-essentials",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/sugar-sweeteners",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/chocolate-cocoa",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/kits-mixes-fillings",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/canned-powdered-milk",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/decorations-frosting",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/doughs-crusts",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/extracts-colouring",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/fruit-seeds-nuts",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/bread-crumbs-stuffing",
+                    f"{BASE_URL}/en/aisles/pantry/baking-ingredients/shortening-fats",
+                ],
+                # Canned & Jarred
+                [
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/vegetables",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/beans-legumes",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/pasta-pasta-sauces",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/tomatoes-paste",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/cooking-sauces",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/fish-seafood",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/meats",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/soups",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/canned-dinners",
+                    f"{BASE_URL}/en/aisles/pantry/canned-jarred/fruit",
+                ],
+                # Cereals, Spreads & Syrups
+                [
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/family-cereals",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/granola-healthier-cereals",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/oatmeal-hot-cereals",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/breakfast-bars-pastries",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/honey-syrup",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/nut-seed-butters",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/jams-jellies",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/chocolate-sweet-spreads",
+                    f"{BASE_URL}/en/aisles/pantry/cereals-spreads-syrups/cheese-savoury-spreads",
+                ],
+                # Condiments & Toppings
+                [
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/ketchup-mustard",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/mayonnaise-sandwich-spreads",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/salad-dressing",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/croutons-salad-toppings",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/bbq-marinade-sauces",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/hot-chili-sauces",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/relish-chutney-fruit-sauces",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/pickles-antipasto",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/tartar-seafood-sauces",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/salsa-guacamole",
+                    f"{BASE_URL}/en/aisles/pantry/condiments-toppings/international-condiments",
+                ],
+                # Herbs, Spices & Sauces
+                [
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/spices",
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/herb-spice-blends",
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/salt-pepper",
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/stock-gravy",
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/cooking-sauces",
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/marinades-cooking-pastes",
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/package-sauces-seasonings",
+                    f"{BASE_URL}/en/aisles/pantry/herbs-spices-sauces/breading-batters-coatings",
+                ],
+                # Oils & Vinegars
+                [
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/olive-oil",
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/vegetable-oil",
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/nut-seed-oil",
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/cooking-spray",
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/white-vinegar",
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/balsamic-vinegar",
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/wine-apple-cider-vinegar",
+                    f"{BASE_URL}/en/aisles/pantry/oils-vinegars/specialty-oil-vinegar",
+                ],
+                # World Cuisine
+                [
+                    f"{BASE_URL}/en/aisles/pantry/world-cuisine/asian",
+                    f"{BASE_URL}/en/aisles/pantry/world-cuisine/mexican",
+                    f"{BASE_URL}/en/aisles/pantry/world-cuisine/mediterranean",
+                ],
+                # Sides
+                [
+                    f"{BASE_URL}/en/aisles/pantry/sides/pasta-sides",
+                    f"{BASE_URL}/en/aisles/pantry/sides/potato-rice-sides",
+                ],
+                # Pasta, Rice & Beans
+                [
+                    f"{BASE_URL}/en/aisles/pantry/pasta-rice-beans/pasta",
+                    f"{BASE_URL}/en/aisles/pantry/pasta-rice-beans/rice",
+                    f"{BASE_URL}/en/aisles/pantry/pasta-rice-beans/dried-beans",
+                    f"{BASE_URL}/en/aisles/pantry/pasta-rice-beans/canned-beans",
+                    f"{BASE_URL}/en/aisles/pantry/pasta-rice-beans/noodles-vermicelli",
+                    f"{BASE_URL}/en/aisles/pantry/pasta-rice-beans/couscous-polenta",
+                    f"{BASE_URL}/en/aisles/pantry/pasta-rice-beans/quinoa-specialty-grains",
+                ],
+                # Donation Bags (leaf)
+                f"{BASE_URL}/en/aisles/pantry/donation-bags",
+            ]
+        ]
     ]
 
 def scrape_all_categories():
