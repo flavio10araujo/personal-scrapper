@@ -775,17 +775,25 @@ def get_categories_structure():
         ])
     ]
 
-def get_all_subcategories(categories) -> List[Dict]:
+def get_all_subcategories(page, categories, depth: int = 0) -> List[Dict]:
+    indent = "   " * depth
+
     subcategories = []
     for category in categories:
+        print(f"{indent}↳ {category['Category']}")
+        products = extract_products_from_category(page, category["Url"], category["Category"])
         subcategories.append({
             "name": category["Category"],
             "gpc_code": "",
             "url": category["Url"],
-            "subcategories": get_all_subcategories(category.get("Subcategories", []))
+            "subcategories": get_all_subcategories(page, category.get("Subcategories", []), depth + 1),
+            "products": products
         })
 
     return subcategories
+
+def extract_products_from_category(page, category_url: str, category_name: str, max_scrolls: int = 100) -> List[Dict]:
+    return []
 
 def scrape_all_categories():
     global seen_skus
@@ -808,15 +816,15 @@ def scrape_all_categories():
                 continue
 
             print(f"\n📦 Category: {category['Category']}")
-            subcategories = get_all_subcategories(category.get("Subcategories", []))
-            #products = extract_products_from_category(page, category["url"], category["name"])
+            subcategories = get_all_subcategories(page, category.get("Subcategories", []))
+            products = extract_products_from_category(page, category["Url"], category["Category"])
 
             all_data.append({
                 "name": category["Category"],
                 "gpc_code": "",
                 "url": category["Url"],
-                "subcategories": subcategories#,
-                #"products": products
+                "subcategories": subcategories,
+                "products": products
             })
 
         browser.close()
