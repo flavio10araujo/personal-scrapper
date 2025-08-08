@@ -796,55 +796,69 @@ def extract_products_from_category(page, category_url: str, category_name: str) 
     global seen_skus
     page.goto(category_url)
     element = page.wait_for_selector('[data-total-results]', timeout=5000)
-    total_results = element.get_attribute('data-total-results')
 
     product_data = []
 
-    wrappers = page.query_selector_all('.default-product-tile')
-
-    for wrapper in wrappers:
+    def calculate_total_pages(total_results_str: str) -> int:
         try:
-            link_el = wrapper.query_selector('a.product-details-link')
-            href = link_el.get_attribute("href") if link_el else ""
-            if not href:
-                continue
+            total = int(total_results_str)
+            return (total // 30) + (1 if total % 30 > 0 else 0)
+        except ValueError:
+            return 1
 
-            sku = wrapper.get_attribute("data-product-code")
-            if sku in seen_skus:
-                continue
-            seen_skus.add(sku)
+    total_results = element.get_attribute('data-total-results')
+    total_pages = calculate_total_pages(total_results)
 
-            name_el = wrapper.get_attribute("data-product-name")
-            name = name_el.inner_text().strip() if name_el else ""
+    for page_number in range(1, total_pages + 1):
+        if page_number > 1:
+            page.goto(category_url + f"-page-{page_number}")
+            page.wait_for_selector('[data-total-results]', timeout=5000)
 
-            quantity_el = wrapper.query_selector('span.head__unit-details')
-            quantity = quantity_el.inner_text().strip() if quantity_el else ""
+        wrappers = page.query_selector_all('.default-product-tile')
 
-            price_el = wrapper.query_selector('div[data-main-price]')
-            price = price_el.get_attribute("data-main-price") if price_el else ""
+        for wrapper in wrappers:
+            try:
+                link_el = wrapper.query_selector('a.product-details-link')
+                href = link_el.get_attribute("href") if link_el else ""
+                if not href:
+                    continue
 
-            brand_el = wrapper.query_selector('span.head__brand')
-            brand = brand_el.inner_text().strip() if brand_el else ""
+                sku = wrapper.get_attribute("data-product-code")
+                if sku in seen_skus:
+                    continue
+                seen_skus.add(sku)
 
-            product_data.append({
-                "name":  brand + " " + category_name,
-                "language": "en",
-                "company": "",
-                "brand": brand,
-                "gpc_code": "",
-                "variations": [
-                    {
-                        "name": name,
-                        "url": BASE_URL + href,
-                        "sku": sku,
-                        "quantity": quantity,
-                        "price": price
-                    }
-                ]
-            })
+                name_el = wrapper.get_attribute("data-product-name")
+                name = name_el.inner_text().strip() if name_el else ""
 
-        except Exception as e:
-            print(f"⚠️ Erro na extração: {e}")
+                quantity_el = wrapper.query_selector('span.head__unit-details')
+                quantity = quantity_el.inner_text().strip() if quantity_el else ""
+
+                price_el = wrapper.query_selector('div[data-main-price]')
+                price = price_el.get_attribute("data-main-price") if price_el else ""
+
+                brand_el = wrapper.query_selector('span.head__brand')
+                brand = brand_el.inner_text().strip() if brand_el else ""
+
+                product_data.append({
+                    "name":  brand + " " + category_name,
+                    "language": "en",
+                    "company": "",
+                    "brand": brand,
+                    "gpc_code": "",
+                    "variations": [
+                        {
+                            "name": name,
+                            "url": BASE_URL + href,
+                            "sku": sku,
+                            "quantity": quantity,
+                            "price": price
+                        }
+                    ]
+                })
+
+            except Exception as e:
+                print(f"⚠️ Erro na extração: {e}")
 
     return product_data
 
