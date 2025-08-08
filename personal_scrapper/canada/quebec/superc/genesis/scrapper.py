@@ -792,8 +792,61 @@ def get_all_subcategories(page, categories, depth: int = 0) -> List[Dict]:
 
     return subcategories
 
-def extract_products_from_category(page, category_url: str, category_name: str, max_scrolls: int = 100) -> List[Dict]:
-    return []
+def extract_products_from_category(page, category_url: str, category_name: str) -> List[Dict]:
+    global seen_skus
+    page.goto(category_url)
+    element = page.wait_for_selector('[data-total-results]', timeout=5000)
+    total_results = element.get_attribute('data-total-results')
+
+    product_data = []
+
+    wrappers = page.query_selector_all('.default-product-tile')
+
+    for wrapper in wrappers:
+        try:
+            link_el = wrapper.query_selector('a.product-details-link')
+            href = link_el.get_attribute("href") if link_el else ""
+            if not href:
+                continue
+
+            sku = wrapper.get_attribute("data-product-code")
+            if sku in seen_skus:
+                continue
+            seen_skus.add(sku)
+
+            name_el = wrapper.get_attribute("data-product-name")
+            name = name_el.inner_text().strip() if name_el else ""
+
+            quantity_el = wrapper.query_selector('span.head__unit-details')
+            quantity = quantity_el.inner_text().strip() if quantity_el else ""
+
+            price_el = wrapper.query_selector('div[data-main-price]')
+            price = price_el.get_attribute("data-main-price") if price_el else ""
+
+            brand_el = wrapper.query_selector('span.head__brand')
+            brand = brand_el.inner_text().strip() if brand_el else ""
+
+            product_data.append({
+                "name":  brand + " " + category_name,
+                "language": "en",
+                "company": "",
+                "brand": brand,
+                "gpc_code": "",
+                "variations": [
+                    {
+                        "name": name,
+                        "url": BASE_URL + href,
+                        "sku": sku,
+                        "quantity": quantity,
+                        "price": price
+                    }
+                ]
+            })
+
+        except Exception as e:
+            print(f"⚠️ Erro na extração: {e}")
+
+    return product_data
 
 def scrape_all_categories():
     global seen_skus
