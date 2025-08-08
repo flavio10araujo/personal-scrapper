@@ -793,6 +793,9 @@ def get_all_subcategories(page, categories, depth: int = 0) -> List[Dict]:
     return subcategories
 
 def extract_products_from_category(page, category_url: str, category_name: str) -> List[Dict]:
+    if not category_url:
+        return []
+
     global seen_skus
     page.goto(category_url)
     element = page.wait_for_selector('[data-total-results]', timeout=5000)
