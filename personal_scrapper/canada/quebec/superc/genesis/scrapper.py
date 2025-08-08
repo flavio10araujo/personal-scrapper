@@ -831,8 +831,8 @@ def extract_products_from_category(page, category_url: str, category_name: str) 
                     continue
                 seen_skus.add(sku)
 
-                name_el = wrapper.get_attribute("data-product-name")
-                name = name_el.inner_text().strip() if name_el else ""
+                name = wrapper.get_attribute("data-product-name")
+                #name = name_el.inner_text().strip() if name_el else ""
 
                 quantity_el = wrapper.query_selector('span.head__unit-details')
                 quantity = quantity_el.inner_text().strip() if quantity_el else ""
