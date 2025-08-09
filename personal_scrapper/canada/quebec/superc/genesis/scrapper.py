@@ -1,3 +1,5 @@
+import time
+
 from playwright.sync_api import sync_playwright, ViewportSize
 from typing import List, Dict
 import re
@@ -7,7 +9,7 @@ BASE_URL = "https://www.superc.ca"
 # Global set to track seen SKUs
 seen_skus = set()
 
-whitelist_categories = ["Pet Care"]
+whitelist_categories = ["Frozen"]
 
 def get_categories_structure():
     def cat(name, url="", subcategories=None):
@@ -299,7 +301,6 @@ def get_categories_structure():
             ])
         ]),
         cat("Beer & Wine", "", [
-            #<div class="aisles--subNav--lev3"><div class="aisles-all-link subNav--id--BV09 active--sub-nav"><a href="/en/aisles/beer-wine/wines-cocktails-coolers">View all  Wines, Cocktails &amp; Coolers</a></div><ul class="subNav--id--BV09 active--sub-nav"><li><a href="/en/aisles/beer-wine/wines-cocktails-coolers/red-wine" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Wines, Cocktails &amp; Coolers" data-grand-child-menu-name="Red Wine"><span>Red Wine</span></a></li><li><a href="/en/aisles/beer-wine/wines-cocktails-coolers/white-wine" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Wines, Cocktails &amp; Coolers" data-grand-child-menu-name="White Wine"><span>White Wine</span></a></li><li><a href="/en/aisles/beer-wine/wines-cocktails-coolers/rose-wine" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Wines, Cocktails &amp; Coolers" data-grand-child-menu-name="Rosé Wine"><span>Rosé Wine</span></a></li><li><a href="/en/aisles/beer-wine/wines-cocktails-coolers/sparkling-wine" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Wines, Cocktails &amp; Coolers" data-grand-child-menu-name="Sparkling Wine"><span>Sparkling Wine</span></a></li><li><a href="/en/aisles/beer-wine/wines-cocktails-coolers/sangria" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Wines, Cocktails &amp; Coolers" data-grand-child-menu-name="Sangria"><span>Sangria</span></a></li><li><a href="/en/aisles/beer-wine/wines-cocktails-coolers/cocktails-other-wines" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Wines, Cocktails &amp; Coolers" data-grand-child-menu-name="Cocktails &amp; Other Wines"><span>Cocktails &amp; Other Wines</span></a></li><li><a href="/en/aisles/beer-wine/wines-cocktails-coolers/coolers" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Wines, Cocktails &amp; Coolers" data-grand-child-menu-name="Coolers"><span>Coolers</span></a></li></ul><div class="aisles-all-link subNav--id--BV10"><a href="/en/aisles/beer-wine/beer-cider">View all  Beer &amp; Cider</a></div><ul class="subNav--id--BV10"><li><a href="/en/aisles/beer-wine/beer-cider/classic-beer" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Beer &amp; Cider" data-grand-child-menu-name="Classic Beer"><span>Classic Beer</span></a></li><li><a href="/en/aisles/beer-wine/beer-cider/classic-light-beer" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Beer &amp; Cider" data-grand-child-menu-name="Classic Light Beer"><span>Classic Light Beer</span></a></li><li><a href="/en/aisles/beer-wine/beer-cider/specialty-flavoured-beer" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Beer &amp; Cider" data-grand-child-menu-name="Specialty &amp; Flavoured Beer"><span>Specialty &amp; Flavoured Beer</span></a></li><li><a href="/en/aisles/beer-wine/beer-cider/imported-beer" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Beer &amp; Cider" data-grand-child-menu-name="Imported Beer"><span>Imported Beer</span></a></li><li><a href="/en/aisles/beer-wine/beer-cider/artisanal-beer-microbrewery" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Beer &amp; Cider" data-grand-child-menu-name="Artisanal Beer &amp; Microbrewery"><span>Artisanal Beer &amp; Microbrewery</span></a></li><a href="/en/aisles/beer-wine/beer-cider/cider" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Beer &amp; Wine" data-child-menu-name="Beer &amp; Cider" data-grand-child-menu-name="Cider"><span>Cider</span></a></li></ul></div>
             cat("Wines, Cocktails & Coolers", "", [
                 cat("Red Wine", f"{BASE_URL}/en/aisles/beer-wine/wines-cocktails-coolers/red-wine"),
                 cat("White Wine", f"{BASE_URL}/en/aisles/beer-wine/wines-cocktails-coolers/white-wine"),
@@ -348,8 +349,7 @@ def get_categories_structure():
             ]),
             cat("Lamb & Game Meat", "", [
                 cat("Ground & Giblets", f"{BASE_URL}/en/aisles/meat-poultry/lamb-game-meat/ground-giblets"),
-                cat("Roasts, Ribs & Racks", f"{BASE_URL}/en/aisles/meat-poultry/lamb-game-meat/roasts-ribs-racks"),
-                cat("Chops & Steaks", f"{BASE_URL}/en/aisles/meat-poultry/lamb-game-meat/chops-steaks")
+                cat("Roasts, Ribs & Racks", f"{BASE_URL}/en/aisles/meat-poultry/lamb-game-meat/roasts-ribs-racks")
             ]),
             cat("Sausages & Bacon", "", [
                 cat("Sausages & Hot Dogs", f"{BASE_URL}/en/aisles/meat-poultry/sausages-bacon/sausages-hot-dogs"),
@@ -509,7 +509,7 @@ def get_categories_structure():
                 cat("Burgers, Meatballs & Sausages", f"{BASE_URL}/en/aisles/frozen/meat-poultry/burgers-meatballs-sausages"),
                 cat("Pork", f"{BASE_URL}/en/aisles/frozen/meat-poultry/pork"),
                 cat("Lamb & Game Meat", f"{BASE_URL}/en/aisles/frozen/meat-poultry/lamb-game-meat"),
-                cat("Fondue", f"{BASE_URL}/en/aisles/frozen/meat-poultry/frozen-meat/fondue"),
+                cat("Fondue", f"{BASE_URL}/en/aisles/frozen/meat-poultry/meat-poultry/fondue"),
                 cat("Meat Pie", f"{BASE_URL}/en/aisles/frozen/meat-poultry/meat-pie")
             ]),
             cat("Meals & Sides", "", [
@@ -576,7 +576,6 @@ def get_categories_structure():
         ]),
         cat("Deli & Prepared Meals", "", [
             cat("Deli Meats", "", [
-                #<div class="aisles--subNav--lev3"><div class="aisles-all-link subNav--id--DP01 active--sub-nav"><a href="/en/aisles/deli-prepared-meals/deli-meats">View all  Deli Meats</a></div><ul class="subNav--id--DP01 active--sub-nav"><li><a href="/en/aisles/deli-prepared-meals/deli-meats/beef" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Deli Meats" data-grand-child-menu-name="Beef"><span>Beef</span></a></li><li><a href="/en/aisles/deli-prepared-meals/deli-meats/turkey-chicken" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Deli Meats" data-grand-child-menu-name="Turkey &amp; Chicken"><span>Turkey &amp; Chicken</span></a></li><li><a href="/en/aisles/deli-prepared-meals/deli-meats/ham-pork" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Deli Meats" data-grand-child-menu-name="Ham &amp; Pork"><span>Ham &amp; Pork</span></a></li><li><a href="/en/aisles/deli-prepared-meals/deli-meats/bologna-pastrami" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Deli Meats" data-grand-child-menu-name="Bologna &amp; Pastrami"><span>Bologna &amp; Pastrami</span></a></li><li><a href="/en/aisles/deli-prepared-meals/deli-meats/salami-pepperoni" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Deli Meats" data-grand-child-menu-name="Salami &amp; Pepperoni"><span>Salami &amp; Pepperoni</span></a></li><li><a href="/en/aisles/deli-prepared-meals/deli-meats/prosciutto-mortadella" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Deli Meats" data-grand-child-menu-name="Prosciutto &amp; Mortadella"><span>Prosciutto &amp; Mortadella</span></a></li><li><a href="/en/aisles/deli-prepared-meals/deli-meats/dry-sausages-smoked-meat" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Deli Meats" data-grand-child-menu-name="Dry Sausages &amp; Smoked Meat"><span>Dry Sausages &amp; Smoked Meat</span></a></li></ul><div class="aisles-all-link subNav--id--DP03"><a href="/en/aisles/deli-prepared-meals/antipasto-dips-pates">View all  Antipasto, Dips &amp; Pâtés</a></div><ul class="subNav--id--DP03"><li><a href="/en/aisles/deli-prepared-meals/antipasto-dips-pates/dips" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Antipasto, Dips &amp; Pâtés" data-grand-child-menu-name="Dips"><span>Dips</span></a></li><li><a href="/en/aisles/deli-prepared-meals/antipasto-dips-pates/hummus-spreads" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Antipasto, Dips &amp; Pâtés" data-grand-child-menu-name="Hummus &amp; Spreads"><span>Hummus &amp; Spreads</span></a></li><li><a href="/en/aisles/deli-prepared-meals/antipasto-dips-pates/pate-cretons" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Antipasto, Dips &amp; Pâtés" data-grand-child-menu-name="Pâté &amp; Cretons"><span>Pâté &amp; Cretons</span></a></li><li><a href="/en/aisles/deli-prepared-meals/antipasto-dips-pates/olives-antipasto" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Antipasto, Dips &amp; Pâtés" data-grand-child-menu-name="Olives &amp; Antipasto"><span>Olives &amp; Antipasto</span></a></li></ul><div class="aisles-all-link subNav--id--DP04"><a href="/en/aisles/deli-prepared-meals/ready-meals-sides">View all  Ready Meals &amp; Sides</a></div><ul class="subNav--id--DP04"><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/appetizers-sides" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Appetizers &amp; Sides"><span>Appetizers &amp; Sides</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/soups-stews" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Soups &amp; Stews"><span>Soups &amp; Stews</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/meat-meals" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Meat Meals"><span>Meat Meals</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/fish-seafood-meals" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Fish &amp; Seafood Meals"><span>Fish &amp; Seafood Meals</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/noodle-pasta-rice-meals" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Noodle, Pasta &amp; Rice Meals"><span>Noodle, Pasta &amp; Rice Meals</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/salads" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Salads"><span>Salads</span></a></li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/sandwiches-lunch-kits" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Sandwiches &amp; Lunch Kits"><span>Sandwiches &amp; Lunch Kits</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/quiche-savoury-pies" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Quiche &amp; Savoury Pies"><span>Quiche &amp; Savoury Pies</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/desserts-snacks" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Desserts &amp; Snacks"><span>Desserts &amp; Snacks</span></a></li><li><a href="/en/aisles/deli-prepared-meals/ready-meals-sides/prepared-dietary-meals" class=" dataLayerBigMenuLevelFour" data-menu-name="Aisles" data-sub-menu-name="Deli &amp; Prepared Meals" data-child-menu-name="Ready Meals &amp; Sides" data-grand-child-menu-name="Prepared Dietary Meals"><span>Prepared Dietary Meals</span></a></li></ul></div>
                 cat("Beef", f"{BASE_URL}/en/aisles/deli-prepared-meals/deli-meats/beef"),
                 cat("Turkey & Chicken", f"{BASE_URL}/en/aisles/deli-prepared-meals/deli-meats/turkey-chicken"),
                 cat("Ham & Pork", f"{BASE_URL}/en/aisles/deli-prepared-meals/deli-meats/ham-pork"),
@@ -767,11 +766,6 @@ def get_categories_structure():
                 cat("Dietary Supplements", f"{BASE_URL}/en/aisles/pharmacy/vitamins-supplements-dietary-products/dietary-supplements"),
                 cat("Meal Replacements & Bars", f"{BASE_URL}/en/aisles/pharmacy/vitamins-supplements-dietary-products/meal-replacements-bars")
             ])
-        ]),
-        cat("Nature's Signature", "", [
-            cat("Pantry", "", [
-                cat("Juice & Beverages", f"{BASE_URL}/en/aisles/nature-s-signature/pantry/juice-beverages")
-            ])
         ])
     ]
 
@@ -789,6 +783,7 @@ def get_all_subcategories(page, categories, depth: int = 0) -> List[Dict]:
             "subcategories": get_all_subcategories(page, category.get("Subcategories", []), depth + 1),
             "products": products
         })
+        time.sleep(0.2)
 
     return subcategories
 
@@ -798,7 +793,8 @@ def extract_products_from_category(page, category_url: str, category_name: str) 
 
     global seen_skus
     page.goto(category_url)
-    element = page.wait_for_selector('[data-total-results]', timeout=5000)
+
+    page.wait_for_selector('#content-temp', timeout=15000)
 
     product_data = []
 
@@ -809,13 +805,22 @@ def extract_products_from_category(page, category_url: str, category_name: str) 
         except ValueError:
             return 1
 
+    element = page.query_selector('[data-total-results]')
+    if not element:
+        print(f"⚠️ No [data-total-results] found in the page for category: {category_name}")
+        return []
+
     total_results = element.get_attribute('data-total-results')
+    if total_results == "0":
+        print(f"⚠️ No products found in category: {category_name}")
+        return []
+
     total_pages = calculate_total_pages(total_results)
 
     for page_number in range(1, total_pages + 1):
         if page_number > 1:
             page.goto(category_url + f"-page-{page_number}")
-            page.wait_for_selector('[data-total-results]', timeout=5000)
+            page.wait_for_selector('[data-total-results]', timeout=15000)
 
         wrappers = page.query_selector_all('.default-product-tile')
 
