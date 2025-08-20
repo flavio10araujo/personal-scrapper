@@ -9,7 +9,7 @@ BASE_URL = "https://www.superc.ca"
 # Global set to track seen SKUs
 seen_skus = set()
 
-whitelist_categories = ["Frozen"]
+whitelist_categories = ["Pharmacy"]
 
 def get_categories_structure():
     def cat(name, url="", subcategories=None):
@@ -509,7 +509,7 @@ def get_categories_structure():
                 cat("Burgers, Meatballs & Sausages", f"{BASE_URL}/en/aisles/frozen/meat-poultry/burgers-meatballs-sausages"),
                 cat("Pork", f"{BASE_URL}/en/aisles/frozen/meat-poultry/pork"),
                 cat("Lamb & Game Meat", f"{BASE_URL}/en/aisles/frozen/meat-poultry/lamb-game-meat"),
-                cat("Fondue", f"{BASE_URL}/en/aisles/frozen/meat-poultry/meat-poultry/fondue"),
+                cat("Fondue", f"{BASE_URL}/en/aisles/frozen/meat-poultry/fondue"),
                 cat("Meat Pie", f"{BASE_URL}/en/aisles/frozen/meat-poultry/meat-pie")
             ]),
             cat("Meals & Sides", "", [
@@ -734,7 +734,7 @@ def get_categories_structure():
             cat("Men's Products", "", [
                 cat("Antiperspirant & Deodorant", f"{BASE_URL}/en/aisles/health-beauty/men-s-products/antiperspirant-deodorant"),
                 cat("Razors & Refills", f"{BASE_URL}/en/aisles/health-beauty/men-s-products/razors-refills"),
-                cat("Shaving Cream & Aftershave", f"{BASE_URL}/en/aisles/healthy/men-s-products/shaving-cream-aftershave"),
+                cat("Shaving Cream & Aftershave", f"{BASE_URL}/en/aisles/health-beauty/men-s-products/shaving-cream-aftershave"),
                 cat("Hair Care", f"{BASE_URL}/en/aisles/health-beauty/men-s-products/hair-care"),
                 cat("Soaps & Bodywash", f"{BASE_URL}/en/aisles/health-beauty/men-s-products/soaps-bodywash")
             ])
@@ -783,7 +783,7 @@ def get_all_subcategories(page, categories, depth: int = 0) -> List[Dict]:
             "subcategories": get_all_subcategories(page, category.get("Subcategories", []), depth + 1),
             "products": products
         })
-        time.sleep(0.2)
+        time.sleep(0.1)
 
     return subcategories
 
